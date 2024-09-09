@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axiosInstance from '../axiosInstance';
 import { useDispatch } from 'react-redux';
 import { fetchUserDetails } from '../slices/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     // Products
@@ -28,7 +29,7 @@ const Home = () => {
     
     };
 
-    const dispatch =useDispatch();
+    const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchUserDetails());
         getProducts();
@@ -46,8 +47,11 @@ const Home = () => {
             
         }
     }
-    
+    const navigate = useNavigate();
     const [readMore, setReadMore] = useState(false);
+    const showProduct = (id) => {
+        navigate(`/product/${id}`)
+    }
   return (
     <div className='p-2'>
         <h1 className='text-3xl'>Products</h1>
@@ -65,7 +69,8 @@ const Home = () => {
                 products && (
     
                         products.map(product => (
-                            <div key={product.id} className='flex flex-col items-center p-2 bg-white  '>
+                            
+                            <div key={product.id} className='flex flex-col items-center p-2 bg-white cursor-pointer' onClick={() => showProduct(product.id)}>
                                 {/* iamge */}
                                 <div className='flex'>
                                     <img src={product.image} alt="" className='w-36 h-36 object-contain' />

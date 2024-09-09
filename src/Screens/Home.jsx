@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import axiosInstance from '../axiosInstance';
+import { useDispatch } from 'react-redux';
+import { fetchUserDetails } from '../slices/userSlice';
 
 const Home = () => {
     // Products
@@ -7,36 +10,60 @@ const Home = () => {
     const fetchProducts = async () => {
         try {
           setLoading(true);
-          const response = await fetch('https://fakestoreapi.com/products');
+          const response = await fetch('https://fakestoreapi.in/api/products');
           const data = await response.json();
-          return data;
+     
+            
+          
+          return data.products;
         } catch (error) {
           console.error('Error fetching the data:', error);
         }
       };
     const getProducts = async () => {
-    const products = await fetchProducts();
-    setLoading(false);
-    setProducts(products);
-    console.log(products);
+        const products = await fetchProducts();
+        setLoading(false);
+        setProducts(products);
+        console.log(products);
     
     };
 
+    const dispatch =useDispatch();
     useEffect(() => {
+        dispatch(fetchUserDetails());
         getProducts();
-        
     }, [])
+
+    const [message, setMessage] = useState('')
+    const addtoCart = async (productId) => {
+
+        
+        try {
+            const response = await axiosInstance.post('/api/user/cart/add', {productId});
+            setMessage(response.data.message);
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
     
     const [readMore, setReadMore] = useState(false);
   return (
     <div className='p-2'>
         <h1 className='text-3xl'>Products</h1>
-        {loading && <p>Loading ...</p>}
+        {loading && (
+            <div className='absolute left-[50%] top-[50%]'>
+                <div class="border-gray-300 h-12 w-12 animate-spin rounded-full border-4 border-t-blue-600" />
+                <p>Fetching Products...</p>
+            </div>
+                    
+        )
+        }
         {/* Products Container */}
         <div className='grid grid-cols-4 gap-4 m-3'>
             {
                 products && (
-                    
+    
                         products.map(product => (
                             <div key={product.id} className='flex flex-col items-center p-2 bg-white  '>
                                 {/* iamge */}
@@ -56,7 +83,8 @@ const Home = () => {
                                     {/* price */}
                                     <p className='mt-2'>Price: ₹{product.price}/-</p>
                                     {/* BTN - add to cart */}
-                                    <button className='bg-blue-500 text-white p-2 mt-2'>Add to Cart</button>
+                                    <button className='bg-blue-500 text-white p-2 mt-2' onClick={() => addtoCart(product.id)}>Add to Cart</button>
+                                    {message && <p className='text-green-800'>{message}</p>}
                                 </div>
                             </div>
                         ))

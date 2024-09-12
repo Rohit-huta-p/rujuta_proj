@@ -77,6 +77,21 @@ export const fetchUserDetails = createAsyncThunk(
 )
 
 
+export const fetchCartItems = createAsyncThunk(
+    'user/fetchCartItems',
+    async (_, {rejectWithValue}) => {
+        try {
+            const response = await axiosInstance.get(`/api/user/cart/allitems`);
+          
+            return response.data;
+          } catch (error) {
+            
+              return rejectWithValue({ message: error.message });
+            
+          }
+    }
+)
+
 
 const userSlice = createSlice({
     name: 'user',
@@ -87,6 +102,7 @@ const userSlice = createSlice({
         error: null,
         message: null,
         isLogin: false,
+        cartItems: []
     },
     reducers: {
         reset: (state) => {
@@ -159,8 +175,6 @@ const userSlice = createSlice({
             .addCase(fetchUserDetails.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
-        
-                
                 state.status = true;
                 state.isLogin = true; 
             })
@@ -171,6 +185,18 @@ const userSlice = createSlice({
                 state.status = false;
                 state.message = action.payload.message;
                 state.isLogin = false; 
+            })
+        // fetchCartItems
+            .addCase(fetchCartItems.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchCartItems.fulfilled, (state, action) => {
+                state.loading = false;
+                state.cartItems = action.payload.cartItems;
+         
+            })
+            .addCase(fetchCartItems.rejected, (state, action) => {
+                state.loading = false;
             })
 
          

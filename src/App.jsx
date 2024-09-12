@@ -6,7 +6,7 @@ import Login from './Screens/Login'
 import { useDispatch, useSelector } from 'react-redux'
 import Navbar from './components/Navbar'
 import Cookies from 'js-cookie';
-import { reset } from './slices/userSlice'
+import { fetchCartItems, reset } from './slices/userSlice'
 import Cart from './Screens/Cart'
 import Orders from './Screens/Orders'
 import Product from './Screens/Product'
@@ -14,6 +14,12 @@ const App = () => {
   const {isLogin} = useSelector(state => state.user);
   console.log(isLogin);
 
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchCartItems())
+
+  }, [])
   
   return (
     <div className='bg-slate-200'>
